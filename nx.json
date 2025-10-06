@@ -17,6 +17,20 @@
         ],
         "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
     },
+    "release": {
+        "projects": ["web"],
+        "projectsRelationship": "independent",
+        "version": {
+            "conventionalCommits": true
+        },
+        "changelog": {
+            "automaticFromRef": true,
+            "workspaceChangelog": {
+                "createRelease": "github"
+            },
+            "projectChangelogs": true
+        }
+    },
     "nxCloudId": "68e2e133a0f1732c58c9a885",
     "targetDefaults": {
         "@angular/build:application": {
