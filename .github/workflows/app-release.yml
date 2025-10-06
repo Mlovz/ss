@@ -23,19 +23,17 @@ jobs:
         id: readver
         shell: bash
         run: |
+          set -euo pipefail
           VERSION=$(node -p "require('./apps/web/package.json').version")
-          if [ -z "$VERSION" ]; then
-            echo "Version is empty. Check apps/web/package.json"
-            exit 1
-          fi
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" | tee -a "$GITHUB_ENV"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create tag if missing
         shell: bash
         run: |
-          git fetch --tags
+          set -euo pipefail
           TAG="web-v${{ steps.readver.outputs.version }}"
+          git fetch --tags
           if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
             echo "Tag $TAG already exists, skipping"
           else
@@ -48,23 +46,24 @@ jobs:
       - name: Extract top release notes
         id: notes
         shell: bash
-        run: |
-          VERSION="${{ steps.readver.outputs.version }}"
-          if [ ! -f apps/web/CHANGELOG.md ]; then
-            echo "# $VERSION" > RELEASE_NOTES.md
-            exit 0
-          fi
-          node -e "
-            const fs = require('fs');
-            const version = process.env.VERSION;
-            const md = fs.readFileSync('apps/web/CHANGELOG.md','utf8');
-            const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\\\$&');
-            const re = new RegExp('##\\\\s*' + esc(version) + '[\\\\s\\\\S]*?(?=\\n##\\\\s|$)');
-            const m = md.match(re);
-            fs.writeFileSync('RELEASE_NOTES.md', m ? m[0] : ('# ' + version + '\\n'));
-          "
         env:
           VERSION: ${{ steps.readver.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [ ! -f apps/web/CHANGELOG.md ]; then
+            printf "# %s\n" "$VERSION" > RELEASE_NOTES.md
+            exit 0
+          fi
+          # ——— запуск JS-кода через heredoc без интерполяции шеллом ———
+          node - <<'NODE'
+          const fs = require('fs');
+          const version = process.env.VERSION;
+          const md = fs.readFileSync('apps/web/CHANGELOG.md','utf8');
+          const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+          const re = new RegExp('##\\s*' + esc(version) + '[\\s\\S]*?(?=\\n##\\s|$)');
+          const m = md.match(re);
+          fs.writeFileSync('RELEASE_NOTES.md', m ? m[0] : ('# ' + version + '\\n'));
+          NODE
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
