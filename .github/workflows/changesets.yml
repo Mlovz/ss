@@ -14,14 +14,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4          # ← устанавливаем pnpm
+        with:
+          version: 9                        # или latest / конкретная версия
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: 22
           cache: 'pnpm'
-      - run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-          pnpm i --frozen-lockfile
+
+      - run: pnpm install --frozen-lockfile
+
       - uses: changesets/action@v1
         with:
           version: pnpm changeset version
