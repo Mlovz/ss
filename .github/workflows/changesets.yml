@@ -4,6 +4,7 @@ on:
     branches: [master]
   push:
     branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,17 +16,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4          # ← устанавливаем pnpm
-        with:
-          version: 9                        # или latest / конкретная версия
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'pnpm'
+          node-version: '22'
 
-      - run: pnpm install --frozen-lockfile
+      # ✅ Устанавливаем pnpm
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
 
+      - run: pnpm --version
+
+      - run: pnpm i --frozen-lockfile
+
+      # Создаёт/обновляет PR "Version Packages"
       - uses: changesets/action@v1
         with:
           version: pnpm changeset version
