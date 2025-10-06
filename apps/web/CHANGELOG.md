@@ -1,6 +1,17 @@
+## 1.0.2 (2025-10-06)
+
+### 🩹 Fixes
+
+-   aafdasdasd ([a030a06](https://github.com/Mlovz/ss/commit/a030a06))
+
+### ❤️ Thank You
+
+-   Yakhya
+
 ## 1.0.1 (2025-10-06)
 
 This was a version bump only for web to align it with other projects, there were no code changes.
+
 ## 2.0.0
 
 ### Major Changes
