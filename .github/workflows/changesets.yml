@@ -37,5 +37,8 @@ jobs:
       - uses: changesets/action@v1
         with:
           version: pnpm changeset version
+          commit: "chore: version packages"
+          title: "chore: release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: 0
