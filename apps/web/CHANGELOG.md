@@ -1,3 +1,13 @@
+## 1.2.0 (2025-10-06)
+
+### 🚀 Features
+
+-   update ([ec12859](https://github.com/Mlovz/ss/commit/ec12859))
+
+### ❤️ Thank You
+
+-   Yakhya
+
 ## 1.1.0 (2025-10-06)
 
 This was a version bump only for web to align it with other projects, there were no code changes.
