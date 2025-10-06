@@ -19,18 +19,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'pnpm'          # кэш для pnpm
 
-      # ✅ Устанавливаем pnpm
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          run_install: false
+      # ✅ Вместо pnpm/action-setup — Corepack, он возьмёт версию из package.json -> packageManager
+      - run: corepack enable
 
-      - run: pnpm --version
+      - run: pnpm --version      # для диагностики увидишь 10.18.0 (или что указано у тебя)
 
       - run: pnpm i --frozen-lockfile
 
-      # Создаёт/обновляет PR "Version Packages"
+      # Создаёт/обновляет PR "Version Packages" (без публикации в npm)
       - uses: changesets/action@v1
         with:
           version: pnpm changeset version
