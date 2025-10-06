@@ -1,5 +1,11 @@
 # @app/web
 
+## 2.0.0
+
+### Major Changes
+
+-   [#5](https://github.com/Mlovz/ss/pull/5) [`feaa458`](https://github.com/Mlovz/ss/commit/feaa4583751e1cddb3fe7f4e0da7f80217640f72) Thanks [@Mlovz](https://github.com/Mlovz)! - ssss
+
 ## 1.0.0
 
 ### Major Changes

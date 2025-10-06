@@ -1,5 +1,0 @@
----
-'@app/web': major
----
-
-ssss
