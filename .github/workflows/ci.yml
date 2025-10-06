@@ -1,0 +1,72 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+permissions:
+    contents: read
+
+jobs:
+    build-test:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: 'pnpm'
+
+            - name: Enable corepack
+              run: |
+                  corepack enable
+                  corepack prepare pnpm@latest --activate
+
+            - name: Install deps
+              run: pnpm i --frozen-lockfile
+
+            - name: Nx cache
+              uses: nrwl/nx-cache-action@v3
+
+            - name: Typecheck
+              run: pnpm typecheck
+
+            - name: Lint (affected)
+              run: pnpm nx affected -t lint --parallel=3
+
+            - name: Unit tests (affected)
+              run: pnpm nx affected -t test --parallel=3 --configuration=ci
+
+            - name: Build (affected, prod + budgets)
+              run: pnpm nx affected -t build --configuration=production
+
+    e2e-smoke:
+        needs: build-test
+        runs-on: ubuntu-latest
+        timeout-minutes: 25
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Node & pnpm
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: 'pnpm'
+            - run: |
+                  corepack enable
+                  corepack prepare pnpm@latest --activate
+                  pnpm i --frozen-lockfile
+
+            - name: Install Playwright
+              run: pnpm exec playwright install --with-deps
+
+            - name: Serve preview (background)
+              run: pnpm nx serve web --configuration=production &
+
+            - name: E2E smoke
+              run: pnpm nx run web-e2e:e2e --configuration=ci

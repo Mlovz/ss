@@ -1,0 +1,28 @@
+name: Bug report
+description: Сообщить о дефекте
+labels: [bug]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Краткое описание
+      placeholder: Что происходит не так?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги воспроизведения
+      description: Шаги, фактический и ожидаемый результат
+      placeholder: 1) ... 2) ...
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Окружение
+      description: Браузер, версия, устройство, сеть
+  - type: textarea
+    id: logs
+    attributes:
+      label: Логи/скриншоты

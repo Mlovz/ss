@@ -1,0 +1,13 @@
+# UI-компоненты и токены дизайна
+/libs/shared/ui/ @design-team @frontend-core
+
+# Фичи
+/libs/feature-auth/ @security @frontend-core
+/libs/feature-*/ @product @frontend-core
+
+# Данные и утилиты
+/libs/data-access/ @backend @frontend-core
+/libs/util/ @frontend-core
+
+# Приложения
+/apps/web/ @frontend-core

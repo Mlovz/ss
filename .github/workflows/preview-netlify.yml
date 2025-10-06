@@ -1,0 +1,29 @@
+name: Preview (Netlify)
+on:
+  pull_request:
+    branches: [main]
+
+concurrency: preview-${{ github.ref }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+          pnpm i --frozen-lockfile
+      - name: Build web
+        run: pnpm nx build web --configuration=production
+      - name: Deploy
+        uses: netlify/actions/cli@v2
+        with:
+          args: deploy --dir=dist/apps/web --message="PR #${{ github.event.number }}" --json
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

@@ -1,0 +1,50 @@
+name: App Release
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'apps/web/package.json'
+      - 'apps/web/CHANGELOG.md'
+
+permissions:
+  contents: write
+
+jobs:
+  tag_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        run: echo "VERSION=$(node -p \"require('./apps/web/package.json').version\")" >> $GITHUB_ENV
+
+      - name: Create tag if missing
+        run: |
+          git fetch --tags
+          if git rev-parse "refs/tags/web-v${VERSION}" >/dev/null 2>&1; then
+            echo "Tag web-v${VERSION} already exists, skipping"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -a "web-v${VERSION}" -m "web v${VERSION}"
+            git push origin "web-v${VERSION}"
+          fi
+
+      - name: Extract top release notes
+        run: |
+          node -e "const fs=require('fs');const v=process.env.VERSION;
+          const md=fs.readFileSync('apps/web/CHANGELOG.md','utf8');
+          const esc=s=>s.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&');
+          const m=md.match(new RegExp('##\\\\s*'+esc(v)+'[\\\\s\\\\S]*?(?=\\n##\\\\s|$)'));
+          fs.writeFileSync('RELEASE_NOTES.md', m?m[0] : '# '+v+'\\n');"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: web-v${{ env.VERSION }}
+          name: web v${{ env.VERSION }}
+          body_path: RELEASE_NOTES.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

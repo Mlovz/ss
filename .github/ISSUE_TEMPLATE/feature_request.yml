@@ -1,0 +1,28 @@
+name: Feature request
+description: Предложить улучшение
+labels: [enhancement]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Краткое описание
+      validations:
+        required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Зачем это нужно?
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Критерии приёмки
+      placeholder: Как поймём, что фича готова?
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Зачем это нужно?
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Критерии приёмки
+      placeholder: Как поймём, что фича готова?
